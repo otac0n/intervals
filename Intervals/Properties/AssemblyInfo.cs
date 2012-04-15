@@ -5,9 +5,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Intervals")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A library for working with intervals and sets.  Includes a generic interface so that intervals of any type may be created.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("John Gietzen")]
 [assembly: AssemblyProduct("Intervals")]
 [assembly: AssemblyCopyright("Copyright © 2012 John Gietzen")]
 [assembly: AssemblyTrademark("")]
