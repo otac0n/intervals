@@ -19,7 +19,7 @@ namespace Intervals.Tests
         [Theory]
         public void IsEmpty_WithNullSet_ReturnsTrue(int start, int end, bool startInclusive, bool endInclusive)
         {
-            NumberInterval intervalA = null;
+            IntegerInterval intervalA = null;
 
             var actual = intervalA.IsEmpty();
 
@@ -31,7 +31,7 @@ namespace Intervals.Tests
         {
             Assume.That(start > end);
 
-            var intervalA = new NumberInterval { Start = start, StartInclusive = startInclusive, End = end, EndInclusive = endInclusive };
+            var intervalA = new IntegerInterval(start, startInclusive, end, endInclusive);
 
             var actual = intervalA.IsEmpty();
 
@@ -43,7 +43,7 @@ namespace Intervals.Tests
         {
             Assume.That(!startInclusive || !endInclusive);
 
-            var intervalA = new NumberInterval { Start = startAndEnd, StartInclusive = startInclusive, End = startAndEnd, EndInclusive = endInclusive };
+            var intervalA = new IntegerInterval(startAndEnd, startInclusive, startAndEnd, endInclusive);
 
             var actual = intervalA.IsEmpty();
 
@@ -53,7 +53,7 @@ namespace Intervals.Tests
         [Theory]
         public void IsEmpty_WithNonSelfExcludedSet_ReturnsFalse(int startAndEnd)
         {
-            var intervalA = new NumberInterval { Start = startAndEnd, StartInclusive = true, End = startAndEnd, EndInclusive = true };
+            var intervalA = new IntegerInterval(startAndEnd, true, startAndEnd, true);
 
             var actual = intervalA.IsEmpty();
 
@@ -65,7 +65,7 @@ namespace Intervals.Tests
         {
             Assume.That(start < end);
 
-            var intervalA = new NumberInterval { Start = start, StartInclusive = startInclusive, End = end, EndInclusive = endInclusive };
+            var intervalA = new IntegerInterval(start, startInclusive, end, endInclusive);
 
             var actual = intervalA.IsEmpty();
 
@@ -77,7 +77,7 @@ namespace Intervals.Tests
         {
             Assume.That(start < value && value < end);
 
-            var interval = new NumberInterval { Start = start, StartInclusive = startInclusive, End = end, EndInclusive = endInclusive };
+            var interval = new IntegerInterval(start, startInclusive, end, endInclusive);
 
             var result = interval.Contains(value);
 
@@ -89,7 +89,7 @@ namespace Intervals.Tests
         {
             Assume.That(start < end);
 
-            var interval = new NumberInterval { Start = start, StartInclusive = true, End = end, EndInclusive = endInclusive };
+            var interval = new IntegerInterval(start, true, end, endInclusive);
 
             var result = interval.Contains(start);
 
@@ -101,7 +101,7 @@ namespace Intervals.Tests
         {
             Assume.That(start < end);
 
-            var interval = new NumberInterval { Start = start, StartInclusive = startInclusive, End = end, EndInclusive = true };
+            var interval = new IntegerInterval(start, startInclusive, end, true);
 
             var result = interval.Contains(end);
 
@@ -113,7 +113,7 @@ namespace Intervals.Tests
         {
             Assume.That(start <= end);
 
-            var interval = new NumberInterval { Start = start, StartInclusive = false, End = end, EndInclusive = endInclusive };
+            var interval = new IntegerInterval(start, false, end, endInclusive);
 
             var result = interval.Contains(start);
 
@@ -125,7 +125,7 @@ namespace Intervals.Tests
         {
             Assume.That(start <= end);
 
-            var interval = new NumberInterval { Start = start, StartInclusive = startInclusive, End = end, EndInclusive = false };
+            var interval = new IntegerInterval(start, startInclusive, end, false);
 
             var result = interval.Contains(end);
 
@@ -137,7 +137,7 @@ namespace Intervals.Tests
         {
             Assume.That(start > end);
 
-            var interval = new NumberInterval { Start = start, StartInclusive = startInclusive, End = end, EndInclusive = endInclusive };
+            var interval = new IntegerInterval(start, startInclusive, end, endInclusive);
 
             var result = interval.Contains(value);
 
@@ -149,7 +149,7 @@ namespace Intervals.Tests
         {
             Assume.That(!startInclusive || !endInclusive);
 
-            var interval = new NumberInterval { Start = startAndEnd, StartInclusive = startInclusive, End = startAndEnd, EndInclusive = endInclusive };
+            var interval = new IntegerInterval(startAndEnd, startInclusive, startAndEnd, endInclusive);
 
             var result = interval.Contains(value);
 
@@ -159,8 +159,8 @@ namespace Intervals.Tests
         [Theory]
         public void Contains_WithNonIntersectingInterval_ReturnsFalse(bool aStartInclusive, bool aEndInclusive, bool bStartInclusive, bool bEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 1, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 2, StartInclusive = bStartInclusive, End = 3, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 1, aEndInclusive);
+            var intervalB = new IntegerInterval(2, bStartInclusive, 3, bEndInclusive);
 
             var result = intervalA.Contains(intervalB);
 
@@ -170,8 +170,8 @@ namespace Intervals.Tests
         [Theory]
         public void Contains_WithEmptyInterval_ReturnsTrue(int aStart, bool aStartInclusive, int aEnd, bool aEndInclusive, bool bStartInclusive, bool bEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = aStart, StartInclusive = aStartInclusive, End = aStart, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 1, StartInclusive = bStartInclusive, End = 0, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(aStart, aStartInclusive, aStart, aEndInclusive);
+            var intervalB = new IntegerInterval(1, bStartInclusive, 0, bEndInclusive);
 
             var result = intervalA.Contains(intervalB);
 
@@ -181,8 +181,8 @@ namespace Intervals.Tests
         [Theory]
         public void Contains_FromEmptyInterval_ReturnsFalse(bool aStartInclusive, bool aEndInclusive, int bStart, bool bStartInclusive, int bEnd, bool bEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = 1, StartInclusive = aStartInclusive, End = 0, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = bStart, StartInclusive = bStartInclusive, End = bEnd, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(1, aStartInclusive, 0, aEndInclusive);
+            var intervalB = new IntegerInterval(bStart, bStartInclusive, bEnd, bEndInclusive);
 
             Assume.That(!intervalB.IsEmpty());
 
@@ -194,8 +194,8 @@ namespace Intervals.Tests
         [Theory]
         public void Contains_WithFullyContainedInterval_ReturnsTrue(bool aStartInclusive, bool aEndInclusive, bool bStartInclusive, bool bEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 3, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 1, StartInclusive = bStartInclusive, End = 2, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 3, aEndInclusive);
+            var intervalB = new IntegerInterval(1, bStartInclusive, 2, bEndInclusive);
 
             var result = intervalA.Contains(intervalB);
 
@@ -205,8 +205,8 @@ namespace Intervals.Tests
         [Theory]
         public void Contains_WithIntervalAdjacentlyIncludedAtStart_ReturnsTrue(bool aEndInclusive, bool bStartInclusive, bool bEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = true, End = 3, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = bStartInclusive, End = 2, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(0, true, 3, aEndInclusive);
+            var intervalB = new IntegerInterval(0, bStartInclusive, 2, bEndInclusive);
 
             var result = intervalA.Contains(intervalB);
 
@@ -216,8 +216,8 @@ namespace Intervals.Tests
         [Theory]
         public void Contains_WithIntervalAdjacentlyIncludedAtEnd_ReturnsTrue(bool aStartInclusive, bool bStartInclusive, bool bEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 3, EndInclusive = true };
-            var intervalB = new NumberInterval { Start = 1, StartInclusive = bStartInclusive, End = 3, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 3, true);
+            var intervalB = new IntegerInterval(1, bStartInclusive, 3, bEndInclusive);
 
             var result = intervalA.Contains(intervalB);
 
@@ -227,8 +227,8 @@ namespace Intervals.Tests
         [Theory]
         public void Contains_WithIntervalAdjacentlyExcludedAtStart_ReturnsFalse(bool aEndInclusive, bool bEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = false, End = 3, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = true, End = 2, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(0, false, 3, aEndInclusive);
+            var intervalB = new IntegerInterval(0, true, 2, bEndInclusive);
 
             var result = intervalA.Contains(intervalB);
 
@@ -238,8 +238,8 @@ namespace Intervals.Tests
         [Theory]
         public void Contains_WithIntervalAdjacentlyExcludedAtEnd_ReturnsTrue(bool aStartInclusive, bool bStartInclusive)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 3, EndInclusive = false };
-            var intervalB = new NumberInterval { Start = 1, StartInclusive = bStartInclusive, End = 3, EndInclusive = true };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 3, false);
+            var intervalB = new IntegerInterval(1, bStartInclusive, 3, true);
 
             var result = intervalA.Contains(intervalB);
 
@@ -249,8 +249,8 @@ namespace Intervals.Tests
         [Theory]
         public void Contains_InDegenerateInterval_ReturnsTrue(bool bStartInclusive, bool bEndInclusively)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = true, End = 0, EndInclusive = true };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = bStartInclusive, End = 0, EndInclusive = bEndInclusively };
+            var intervalA = new IntegerInterval(0, true, 0, true);
+            var intervalB = new IntegerInterval(0, bStartInclusive, 0, bEndInclusively);
 
             var result = intervalA.Contains(intervalB);
 
@@ -260,8 +260,8 @@ namespace Intervals.Tests
         [Theory]
         public void Contains_WithZeroIntervalExclusive_ReturnsFalse(bool aStartInclusive, bool aEndInclusive, bool bStartInclusive, bool bEndInclusively)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = false, End = 0, EndInclusive = false };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = bStartInclusive, End = 0, EndInclusive = bEndInclusively };
+            var intervalA = new IntegerInterval(0, false, 0, false);
+            var intervalB = new IntegerInterval(0, bStartInclusive, 0, bEndInclusively);
 
             Assume.That(intervalA.IsEmpty());
             Assume.That(!intervalB.IsEmpty());
@@ -274,8 +274,8 @@ namespace Intervals.Tests
         [Theory]
         public void Contains_WithEndAdjacentZeroIntervalExcluded_ReturnsFalse(bool aStartInclusive, bool bStartInclusive, bool bEndInclusively)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 3, EndInclusive = false };
-            var intervalB = new NumberInterval { Start = 3, StartInclusive = bStartInclusive, End = 3, EndInclusive = bEndInclusively };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 3, false);
+            var intervalB = new IntegerInterval(3, bStartInclusive, 3, bEndInclusively);
 
             Assume.That(!intervalB.IsEmpty());
 
@@ -287,8 +287,8 @@ namespace Intervals.Tests
         [Theory]
         public void Contains_WithEndAdjacentZeroIntervalIncluded_ReturnsTrue(bool aStartInclusive, bool bStartInclusive, bool bEndInclusively)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 3, EndInclusive = true };
-            var intervalB = new NumberInterval { Start = 3, StartInclusive = bStartInclusive, End = 3, EndInclusive = bEndInclusively };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 3, true);
+            var intervalB = new IntegerInterval(3, bStartInclusive, 3, bEndInclusively);
 
             var result = intervalA.Contains(intervalB);
 
@@ -298,8 +298,8 @@ namespace Intervals.Tests
         [Theory]
         public void Contains_WithStartAdjacentZeroIntervalExcluded_ReturnsFalse(bool aEndInclusive, bool bStartInclusive, bool bEndInclusively)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = false, End = 3, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = bStartInclusive, End = 0, EndInclusive = bEndInclusively };
+            var intervalA = new IntegerInterval(0, false, 3, aEndInclusive);
+            var intervalB = new IntegerInterval(0, bStartInclusive, 0, bEndInclusively);
 
             Assume.That(!intervalB.IsEmpty());
 
@@ -311,8 +311,8 @@ namespace Intervals.Tests
         [Theory]
         public void Contains_WithStartAdjacentZeroIntervalIncluded_ReturnsTrue(bool aEndInclusive, bool bStartInclusive, bool bEndInclusively)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = true, End = 3, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = bStartInclusive, End = 0, EndInclusive = bEndInclusively };
+            var intervalA = new IntegerInterval(0, true, 3, aEndInclusive);
+            var intervalB = new IntegerInterval(0, bStartInclusive, 0, bEndInclusively);
 
             var result = intervalA.Contains(intervalB);
 
@@ -322,8 +322,8 @@ namespace Intervals.Tests
         [Theory]
         public void IntersectWith_WithEmptyInterval_ReturnsNull(bool aStartInclusive, bool aEndInclusive, int bStart, bool bStartInclusive, int bEnd, bool bEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = 1, StartInclusive = aStartInclusive, End = 0, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = bStart, StartInclusive = bStartInclusive, End = bEnd, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(1, aStartInclusive, 0, aEndInclusive);
+            var intervalB = new IntegerInterval(bStart, bStartInclusive, bEnd, bEndInclusive);
 
             var actual = intervalA.IntersectWith(intervalB);
 
@@ -333,8 +333,8 @@ namespace Intervals.Tests
         [Theory]
         public void IntersectWith_FromEmptyInterval_ReturnsNull(int aStart, bool aStartInclusive, int aEnd, bool aEndInclusive, bool bStartInclusive, bool bEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = aStart, StartInclusive = aStartInclusive, End = aEnd, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 1, StartInclusive = bStartInclusive, End = 0, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(aStart, aStartInclusive, aEnd, aEndInclusive);
+            var intervalB = new IntegerInterval(1, bStartInclusive, 0, bEndInclusive);
 
             var actual = intervalA.IntersectWith(intervalB);
 
@@ -344,7 +344,7 @@ namespace Intervals.Tests
         [Theory]
         public void IntersectWith_WithSameInterval_ReturnsOriginalReference(bool aStartInclusive, bool aEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 3, EndInclusive = aEndInclusive };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 3, aEndInclusive);
 
             var actual = intervalA.IntersectWith(intervalA);
 
@@ -354,8 +354,8 @@ namespace Intervals.Tests
         [Theory]
         public void IntersectWith_WithWhollyContianedInterval_ReturnsContainedInterval(bool aStartInclusive, bool aEndInclusive, bool bStartInclusive, bool bEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 3, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 1, StartInclusive = bStartInclusive, End = 2, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 3, aEndInclusive);
+            var intervalB = new IntegerInterval(1, bStartInclusive, 2, bEndInclusive);
 
             var actual = intervalA.IntersectWith(intervalB);
 
@@ -365,8 +365,8 @@ namespace Intervals.Tests
         [Theory]
         public void IntersectWith_WhenIntervalsDoNotIntersect_ReturnsNull(bool aStartInclusive, bool aEndInclusive, bool bStartInclusive, bool bEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 1, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 2, StartInclusive = bStartInclusive, End = 3, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 1, aEndInclusive);
+            var intervalB = new IntegerInterval(2, bStartInclusive, 3, bEndInclusive);
 
             var actual = intervalA.IntersectWith(intervalB);
 
@@ -376,8 +376,8 @@ namespace Intervals.Tests
         [Theory]
         public void IntersectWith_WhenIntervalsIntersectInAPoint_ReturnsThatPointWithMatchingInclusivity(bool aStartInclusive, bool bEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 2, EndInclusive = true };
-            var intervalB = new NumberInterval { Start = 2, StartInclusive = true, End = 3, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 2, true);
+            var intervalB = new IntegerInterval(2, true, 3, bEndInclusive);
 
             var actual = intervalA.IntersectWith(intervalB);
 
@@ -391,8 +391,8 @@ namespace Intervals.Tests
         {
             Assume.That(!aEndInclusive || !bStartInclusive);
 
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 2, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 2, StartInclusive = bStartInclusive, End = 3, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 2, aEndInclusive);
+            var intervalB = new IntegerInterval(2, bStartInclusive, 3, bEndInclusive);
 
             var actual = intervalA.IntersectWith(intervalB);
 
@@ -402,8 +402,8 @@ namespace Intervals.Tests
         [Theory]
         public void IntersectWith_WhenIntervalsIntersectInAInterval_ReturnsThatIntervalWithMatchingInclusivity(bool aStartInclusive, bool aEndInclusive, bool bStartInclusive, bool bEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 2, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 1, StartInclusive = bStartInclusive, End = 3, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 2, aEndInclusive);
+            var intervalB = new IntegerInterval(1, bStartInclusive, 3, bEndInclusive);
 
             var actual = intervalA.IntersectWith(intervalB);
 
@@ -416,8 +416,8 @@ namespace Intervals.Tests
         [Theory]
         public void IntersectWith_WhenIntervalsIntersectInAIntervalReversed_ReturnsThatIntervalWithMatchingInclusivity(bool aStartInclusive, bool aEndInclusive, bool bStartInclusive, bool bEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 2, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 1, StartInclusive = bStartInclusive, End = 3, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 2, aEndInclusive);
+            var intervalB = new IntegerInterval(1, bStartInclusive, 3, bEndInclusive);
 
             var actual = intervalB.IntersectWith(intervalA);
 
@@ -430,8 +430,8 @@ namespace Intervals.Tests
         [Theory]
         public void IntersectWith_WhenIntervalsAreSameSize_ReturnsIntervalWithMostRestrictedInclusivity(bool aStartInclusive, bool aEndInclusive, bool bStartInclusive, bool bEndInclusive)
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 3, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = bStartInclusive, End = 3, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 3, aEndInclusive);
+            var intervalB = new IntegerInterval(0, bStartInclusive, 3, bEndInclusive);
 
             var actual = intervalA.IntersectWith(intervalB);
 
@@ -448,8 +448,8 @@ namespace Intervals.Tests
             Assume.That(bStartInclusive || (!bStartInclusive && !aStartInclusive));
             Assume.That(bEndInclusive || (!bEndInclusive && !aEndInclusive));
 
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 3, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = bStartInclusive, End = 3, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 3, aEndInclusive);
+            var intervalB = new IntegerInterval(0, bStartInclusive, 3, bEndInclusive);
 
             var actual = intervalA.IntersectWith(intervalB);
 
@@ -464,8 +464,8 @@ namespace Intervals.Tests
             Assume.That(aEndInclusive || (!aEndInclusive && !bEndInclusive));
             Assume.That((!bStartInclusive && aStartInclusive) || (!bEndInclusive && aEndInclusive));
 
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = aStartInclusive, End = 3, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = bStartInclusive, End = 3, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(0, aStartInclusive, 3, aEndInclusive);
+            var intervalB = new IntegerInterval(0, bStartInclusive, 3, bEndInclusive);
 
             var actual = intervalA.IntersectWith(intervalB);
 
@@ -477,8 +477,8 @@ namespace Intervals.Tests
         {
             Assume.That(!aStartInclusive || !aEndInclusive);
 
-            var intervalA = new NumberInterval { Start = aStartAndEnd, StartInclusive = aStartInclusive, End = aStartAndEnd, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = bStart, StartInclusive = bStartInclusive, End = bEnd, EndInclusive = bEndInclusive };
+            var intervalA = new IntegerInterval(aStartAndEnd, aStartInclusive, aStartAndEnd, aEndInclusive);
+            var intervalB = new IntegerInterval(bStart, bStartInclusive, bEnd, bEndInclusive);
 
             var actual = intervalA.IntersectWith(intervalB);
 
@@ -490,8 +490,8 @@ namespace Intervals.Tests
         {
             Assume.That(!bStartInclusive || !bEndInclusive);
 
-            var intervalA = new NumberInterval { Start = aStart, StartInclusive = aStartInclusive, End = aEnd, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = false, End = 0, EndInclusive = false };
+            var intervalA = new IntegerInterval(aStart, aStartInclusive, aEnd, aEndInclusive);
+            var intervalB = new IntegerInterval(0, false, 0, false);
 
             var actual = intervalA.IntersectWith(intervalB);
 
@@ -501,8 +501,8 @@ namespace Intervals.Tests
         [Test]
         public void UnionWith_WithTwoEmptySets_ReturnsNull()
         {
-            NumberInterval intervalA = null;
-            NumberInterval intervalB = null;
+            IntegerInterval intervalA = null;
+            IntegerInterval intervalB = null;
 
             var actual = intervalA.UnionWith(intervalB);
 
@@ -512,8 +512,8 @@ namespace Intervals.Tests
         [Test]
         public void UnionWith_WithOtherIntervalEmpty_ReturnsThisInterval()
         {
-            var intervalA = new NumberInterval { Start = 1, StartInclusive = false, End = 3, EndInclusive = false };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = false, End = 0, EndInclusive = false };
+            var intervalA = new IntegerInterval(1, false, 3, false);
+            var intervalB = new IntegerInterval(0, false, 0, false);
 
             var actual = intervalA.UnionWith(intervalB);
 
@@ -523,8 +523,8 @@ namespace Intervals.Tests
         [Test]
         public void UnionWith_WithThisIntervalEmpty_ReturnsOtherInterval()
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = false, End = 0, EndInclusive = false };
-            var intervalB = new NumberInterval { Start = 1, StartInclusive = false, End = 3, EndInclusive = false };
+            var intervalA = new IntegerInterval(0, false, 0, false);
+            var intervalB = new IntegerInterval(1, false, 3, false);
 
             var actual = intervalA.UnionWith(intervalB);
 
@@ -534,8 +534,8 @@ namespace Intervals.Tests
         [Test]
         public void UnionWith_WhenIntervalsDoNotIntersect_ReturnsBothIntervals()
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = false, End = 1, EndInclusive = false };
-            var intervalB = new NumberInterval { Start = 2, StartInclusive = false, End = 3, EndInclusive = false };
+            var intervalA = new IntegerInterval(0, false, 1, false);
+            var intervalB = new IntegerInterval(2, false, 3, false);
 
             var actual = intervalA.UnionWith(intervalB);
 
@@ -545,8 +545,8 @@ namespace Intervals.Tests
         [Test]
         public void UnionWith_WhenIntervalsIntersectAtAnExcludedPoint_ReturnsBothIntervals()
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = false, End = 2, EndInclusive = false };
-            var intervalB = new NumberInterval { Start = 2, StartInclusive = false, End = 3, EndInclusive = false };
+            var intervalA = new IntegerInterval(0, false, 2, false);
+            var intervalB = new IntegerInterval(2, false, 3, false);
 
             var actual = intervalA.UnionWith(intervalB);
 
@@ -558,8 +558,8 @@ namespace Intervals.Tests
         {
             Assume.That(aEndInclusive || bStartInclusive);
 
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = false, End = 2, EndInclusive = aEndInclusive };
-            var intervalB = new NumberInterval { Start = 2, StartInclusive = bStartInclusive, End = 3, EndInclusive = false };
+            var intervalA = new IntegerInterval(0, false, 2, aEndInclusive);
+            var intervalB = new IntegerInterval(2, bStartInclusive, 3, false);
 
             var actual = intervalA.UnionWith(intervalB);
 
@@ -571,8 +571,8 @@ namespace Intervals.Tests
         [Test]
         public void UnionWith_WhenIntervalsOverlap_ReturnsASingleIntervalThatContainsBothIntervals()
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = false, End = 2, EndInclusive = false };
-            var intervalB = new NumberInterval { Start = 1, StartInclusive = false, End = 3, EndInclusive = false };
+            var intervalA = new IntegerInterval(0, false, 2, false);
+            var intervalB = new IntegerInterval(1, false, 3, false);
 
             var actual = intervalA.UnionWith(intervalB);
 
@@ -584,8 +584,8 @@ namespace Intervals.Tests
         [Test]
         public void UnionWith_WhenThisIntervalContainsOtherInterval_ReturnsThisInterval()
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = false, End = 3, EndInclusive = false };
-            var intervalB = new NumberInterval { Start = 1, StartInclusive = false, End = 2, EndInclusive = false };
+            var intervalA = new IntegerInterval(0, false, 3, false);
+            var intervalB = new IntegerInterval(1, false, 2, false);
 
             var actual = intervalA.UnionWith(intervalB);
 
@@ -595,8 +595,8 @@ namespace Intervals.Tests
         [Test]
         public void UnionWith_WhenOtherIntervalContainsThisInterval_ReturnsOtherInterval()
         {
-            var intervalA = new NumberInterval { Start = 1, StartInclusive = false, End = 2, EndInclusive = false };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = false, End = 3, EndInclusive = false };
+            var intervalA = new IntegerInterval(1, false, 2, false);
+            var intervalB = new IntegerInterval(0, false, 3, false);
 
             var actual = intervalA.UnionWith(intervalB);
 
@@ -608,11 +608,11 @@ namespace Intervals.Tests
         {
             var set = new[]
             {
-                new NumberInterval { Start = 0, StartInclusive = true, End = 1, EndInclusive = false },
-                new NumberInterval { Start = 2, StartInclusive = true, End = 3, EndInclusive = false },
+                new IntegerInterval(0, true, 1, false),
+                new IntegerInterval(2, true, 3, false),
             };
 
-            var interval = new NumberInterval { Start = 1, StartInclusive = true, End = 2, EndInclusive = false };
+            var interval = new IntegerInterval(1, true, 2, false);
 
             var actual = set.UnionWith(interval);
 
@@ -624,8 +624,8 @@ namespace Intervals.Tests
         [Test]
         public void DifferenceWith_WithEmptyInterval_ReturnsThisInterval()
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = false, End = 3, EndInclusive = false };
-            var intervalB = new NumberInterval { Start = 2, StartInclusive = false, End = 2, EndInclusive = false };
+            var intervalA = new IntegerInterval(0, false, 3, false);
+            var intervalB = new IntegerInterval(2, false, 2, false);
 
             var actual = intervalA.DifferenceWith(intervalB);
 
@@ -635,8 +635,8 @@ namespace Intervals.Tests
         [Test]
         public void DifferenceWith_FromEmptyInterval_ReturnsNull()
         {
-            var intervalA = new NumberInterval { Start = 2, StartInclusive = false, End = 2, EndInclusive = false };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = false, End = 3, EndInclusive = false };
+            var intervalA = new IntegerInterval(2, false, 2, false);
+            var intervalB = new IntegerInterval(0, false, 3, false);
 
             var actual = intervalA.DifferenceWith(intervalB);
 
@@ -646,8 +646,8 @@ namespace Intervals.Tests
         [Test]
         public void DifferenceWith_WhenThisIntervalIsContainedByOtherInterval_ReturnsNull()
         {
-            var intervalA = new NumberInterval { Start = 1, StartInclusive = false, End = 2, EndInclusive = false };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = false, End = 3, EndInclusive = false };
+            var intervalA = new IntegerInterval(1, false, 2, false);
+            var intervalB = new IntegerInterval(0, false, 3, false);
 
             var actual = intervalA.DifferenceWith(intervalB);
 
@@ -657,8 +657,8 @@ namespace Intervals.Tests
         [Test]
         public void DifferenceWith_WithIntervalsIntersectingAtStartPoint_ReturnsNewIntervalExcludingStart()
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = true, End = 3, EndInclusive = true };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = true, End = 0, EndInclusive = true };
+            var intervalA = new IntegerInterval(0, true, 3, true);
+            var intervalB = new IntegerInterval(0, true, 0, true);
 
             var actual = intervalA.DifferenceWith(intervalB);
 
@@ -670,8 +670,8 @@ namespace Intervals.Tests
         [Test]
         public void DifferenceWith_WithIntervalsIntersectingAtEndPoint_ReturnsNewIntervalExcludingEnd()
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = true, End = 3, EndInclusive = true };
-            var intervalB = new NumberInterval { Start = 3, StartInclusive = true, End = 3, EndInclusive = true };
+            var intervalA = new IntegerInterval(0, true, 3, true);
+            var intervalB = new IntegerInterval(3, true, 3, true);
 
             var actual = intervalA.DifferenceWith(intervalB);
 
@@ -683,8 +683,8 @@ namespace Intervals.Tests
         [Test]
         public void DifferenceWith_WhenOtherOverlapsThisStart_ReturnsNewIntervalExcludingStart()
         {
-            var intervalA = new NumberInterval { Start = 1, StartInclusive = true, End = 3, EndInclusive = true };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = true, End = 2, EndInclusive = true };
+            var intervalA = new IntegerInterval(1, true, 3, true);
+            var intervalB = new IntegerInterval(0, true, 2, true);
 
             var actual = intervalA.DifferenceWith(intervalB);
 
@@ -696,8 +696,8 @@ namespace Intervals.Tests
         [Test]
         public void DifferenceWith_WhenOtherOverlapsThisEnd_ReturnsNewIntervalExcludingStart()
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = true, End = 2, EndInclusive = true };
-            var intervalB = new NumberInterval { Start = 1, StartInclusive = true, End = 3, EndInclusive = true };
+            var intervalA = new IntegerInterval(0, true, 2, true);
+            var intervalB = new IntegerInterval(1, true, 3, true);
 
             var actual = intervalA.DifferenceWith(intervalB);
 
@@ -709,8 +709,8 @@ namespace Intervals.Tests
         [Test]
         public void DifferenceWith_WhenOtherIntervalContainedByThis_ReturnsTwoIntervalsThatDontIntersectOther()
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = true, End = 3, EndInclusive = true };
-            var intervalB = new NumberInterval { Start = 1, StartInclusive = true, End = 2, EndInclusive = true };
+            var intervalA = new IntegerInterval(0, true, 3, true);
+            var intervalB = new IntegerInterval(1, true, 2, true);
 
             var actual = intervalA.DifferenceWith(intervalB);
 
@@ -722,8 +722,8 @@ namespace Intervals.Tests
         [Test]
         public void DifferenceWith_WhenWhollyOverlappedExceptEndPoints_ReturnsTwoDegenerateIntervalsForTheEndPoints()
         {
-            var intervalA = new NumberInterval { Start = 0, StartInclusive = true, End = 3, EndInclusive = true };
-            var intervalB = new NumberInterval { Start = 0, StartInclusive = false, End = 3, EndInclusive = false };
+            var intervalA = new IntegerInterval(0, true, 3, true);
+            var intervalB = new IntegerInterval(0, false, 3, false);
 
             var actual = intervalA.DifferenceWith(intervalB);
 
@@ -737,52 +737,15 @@ namespace Intervals.Tests
         {
             var set = new[]
             {
-                new NumberInterval { Start = 0, StartInclusive = true, End = 2, EndInclusive = true },
-                new NumberInterval { Start = 2, StartInclusive = false, End = 3, EndInclusive = false },
+                new IntegerInterval(0, true, 2, true),
+                new IntegerInterval(2, false, 3, false),
             };
 
-            var interval = new NumberInterval { Start = 0, StartInclusive = true, End = 3, EndInclusive = true };
+            var interval = new IntegerInterval(0, true, 3, true);
 
             var actual = set.DifferenceWith(interval);
 
             Assert.That(actual.IsEmpty());
-        }
-
-        private class NumberInterval : IInterval<int>
-        {
-            public int Start { get; set; }
-
-            public bool StartInclusive { get; set; }
-
-            public int End { get; set; }
-
-            public bool EndInclusive { get; set; }
-
-            public NumberInterval Clone(int start, bool startInclusive, int end, bool endInclusive)
-            {
-                return new NumberInterval
-                {
-                    Start = start,
-                    StartInclusive = startInclusive,
-                    End = end,
-                    EndInclusive = endInclusive,
-                };
-            }
-
-            IInterval<int> IInterval<int>.Clone(int start, bool startInclusive, int end, bool endInclusive)
-            {
-                return this.Clone(start, startInclusive, end, endInclusive);
-            }
-
-            public override string ToString()
-            {
-                return
-                    (StartInclusive ? "[" : "(") +
-                    Start +
-                    "," +
-                    End +
-                    (EndInclusive ? "]" : ")");
-            }
         }
     }
 }
