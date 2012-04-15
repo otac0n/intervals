@@ -4,3 +4,4 @@
 *.suo
 *.ncrunch*
 /*.nupkg
+*.[Cc]ache
