@@ -66,6 +66,14 @@ namespace Intervals
         }
 
         /// <summary>
+        /// Gets the string that this interval descries.
+        /// </summary>
+        public string Source
+        {
+            get { return this.source; }
+        }
+
+        /// <summary>
         /// Gets the starting index of this interval.
         /// </summary>
         public int Start
