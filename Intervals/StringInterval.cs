@@ -9,14 +9,21 @@ namespace Intervals
 {
     using System;
 
-    public class StringRange : IInterval<int>
+    /// <summary>
+    /// Represents an interval of characters in a string.
+    /// </summary>
+    public class StringInterval : IInterval<int>
     {
         private readonly int start;
         private readonly int length;
         private readonly string source;
         private readonly string value;
 
-        public StringRange(string source)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringInterval"/> class.
+        /// </summary>
+        /// <param name="source">The string that this interval describes.</param>
+        public StringInterval(string source)
         {
             if (source == null)
             {
@@ -26,10 +33,16 @@ namespace Intervals
             this.source = source;
             this.start = 0;
             this.length = source.Length;
-            this.value = source.Substring(start, length);
+            this.value = source;
         }
 
-        public StringRange(string source, int start, int length)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringInterval"/> class.
+        /// </summary>
+        /// <param name="source">The string that this interval describes.</param>
+        /// <param name="start">The starting index of this interval.</param>
+        /// <param name="length">The length of this interval.</param>
+        public StringInterval(string source, int start, int length)
         {
             if (source == null)
             {
@@ -52,21 +65,33 @@ namespace Intervals
             this.value = source.Substring(start, length);
         }
 
+        /// <summary>
+        /// Gets the starting index of this interval.
+        /// </summary>
         public int Start
         {
             get { return this.start; }
         }
 
+        /// <summary>
+        /// Gets the length of this interval.
+        /// </summary>
         public int Length
         {
             get { return this.length; }
         }
 
+        /// <summary>
+        /// Gets the ending index of this interval.
+        /// </summary>
         public int End
         {
             get { return this.start + this.length; }
         }
 
+        /// <summary>
+        /// Gets the portion of the string represented by this interval.
+        /// </summary>
         public string Value
         {
             get { return this.value; }
@@ -84,7 +109,7 @@ namespace Intervals
 
         IInterval<int> IInterval<int>.Clone(int start, bool startInclusive, int end, bool endInclusive)
         {
-            return new StringRange(this.source, start, end - start);
+            return new StringInterval(this.source, start, end - start);
         }
     }
 }
