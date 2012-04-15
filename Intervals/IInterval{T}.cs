@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IInterval`1.cs" company="(none)">
+// <copyright file="IInterval{T}.cs" company="(none)">
 //  Copyright © 2012 John Gietzen. All rights reserved.
 // </copyright>
 // <author>John Gietzen</author>

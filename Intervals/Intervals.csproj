@@ -42,7 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IInterval`1.cs" />
+    <Compile Include="IInterval{T}.cs" />
     <Compile Include="IntegerInterval.cs" />
     <Compile Include="IntervalExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
