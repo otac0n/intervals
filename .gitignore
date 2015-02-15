@@ -5,3 +5,4 @@
 *.ncrunch*
 /*.nupkg
 *.[Cc]ache
+*.sln.ide/
