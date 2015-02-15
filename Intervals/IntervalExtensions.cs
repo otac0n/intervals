@@ -17,65 +17,6 @@ namespace Intervals
     public static class IntervalExtensions
     {
         /// <summary>
-        /// Tests an interval to determine if it is empty.
-        /// </summary>
-        /// <typeparam name="T">The type of values included in the interval.</typeparam>
-        /// <param name="interval">The interval to test.</param>
-        /// <returns>true, if the interval is null or considered empty; false, otherwise.</returns>
-        /// <remarks>
-        /// If an interval has the same start and end values, but either the start or end value is not inclusive, the interval is empty.
-        /// An interval is also considered empty if its start value is greater than its end value.
-        /// </remarks>
-        public static bool IsEmpty<T>(this IInterval<T> interval) where T : IComparable<T>
-        {
-            if (interval == null)
-            {
-                return true;
-            }
-
-            var startToEnd = interval.Start.CompareTo(interval.End);
-            if (startToEnd > 0)
-            {
-                return true;
-            }
-            else if (startToEnd == 0 && (!interval.StartInclusive || !interval.EndInclusive))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Tests a set of intervals to see if it is empty.
-        /// </summary>
-        /// <typeparam name="T">The type of values included in the intervals.</typeparam>
-        /// <param name="set">The set of intervals to test.</param>
-        /// <returns>true, if the set is null or considered empty; false, otherwise.</returns>
-        /// <remarks>
-        /// See <see cref="IsEmpty&lt;T&gt;(IInterval&lt;T&gt;)"/> for remarks.
-        /// </remarks>
-        public static bool IsEmpty<T>(this IEnumerable<IInterval<T>> set) where T : IComparable<T>
-        {
-            if (set == null)
-            {
-                return true;
-            }
-
-            foreach (var interval in set)
-            {
-                if (!interval.IsEmpty())
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// Tests an interval to see if it contains a given value.
         /// </summary>
         /// <typeparam name="T">The type of values included in the interval.</typeparam>
@@ -149,6 +90,128 @@ namespace Intervals
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Returns the difference of one interval to another.
+        /// </summary>
+        /// <typeparam name="T">The type of values included in the intervals.</typeparam>
+        /// <param name="interval">The source interval.</param>
+        /// <param name="other">The interval to exclude.</param>
+        /// <returns>A set that contains every part of <paramref name="interval"/> that is not also contained by <paramref name="other"/>.</returns>
+        public static IList<IInterval<T>> DifferenceWith<T>(this IInterval<T> interval, IInterval<T> other) where T : IComparable<T>
+        {
+            if (interval.IsEmpty())
+            {
+                return null;
+            }
+
+            var intersection = interval.IntersectWith(other);
+
+            if (intersection.IsEmpty())
+            {
+                return new[] { interval };
+            }
+            else if (intersection == interval)
+            {
+                return null;
+            }
+
+            var intervals = new List<IInterval<T>>();
+
+            var startToStart = interval.Start.CompareTo(intersection.Start);
+
+            if (startToStart != 0 ||
+                (interval.StartInclusive && !intersection.StartInclusive))
+            {
+                intervals.Add(interval.Clone(
+                        interval.Start,
+                        interval.StartInclusive,
+                        intersection.Start,
+                        !intersection.StartInclusive));
+            }
+
+            var endToEnd = interval.End.CompareTo(intersection.End);
+
+            if (endToEnd != 0 ||
+                (interval.EndInclusive && !intersection.EndInclusive))
+            {
+                intervals.Add(interval.Clone(
+                        intersection.End,
+                        !intersection.EndInclusive,
+                        interval.End,
+                        interval.EndInclusive));
+            }
+
+            return intervals;
+        }
+
+        /// <summary>
+        /// Returns the difference between a set and an interval.
+        /// </summary>
+        /// <typeparam name="T">The type of values included in the intervals.</typeparam>
+        /// <param name="set">The source set.</param>
+        /// <param name="interval">The interval to exclude.</param>
+        /// <returns>A set that contains every part of <paramref name="set"/> that is not also contained by <paramref name="interval"/>.</returns>
+        public static IList<IInterval<T>> DifferenceWith<T>(this IEnumerable<IInterval<T>> set, IInterval<T> interval) where T : IComparable<T>
+        {
+            return set.DifferenceWith(new[] { interval });
+        }
+
+        /// <summary>
+        /// Returns the difference between an interval and a set.
+        /// </summary>
+        /// <typeparam name="T">The type of values included in the intervals.</typeparam>
+        /// <param name="interval">The source interval.</param>
+        /// <param name="set">The set to exclude.</param>
+        /// <returns>A set that contains every part of <paramref name="interval"/> that is not also contained by <paramref name="set"/>.</returns>
+        public static IList<IInterval<T>> DifferenceWith<T>(this IInterval<T> interval, IEnumerable<IInterval<T>> set) where T : IComparable<T>
+        {
+            return set.DifferenceWith(new[] { interval });
+        }
+
+        /// <summary>
+        /// Returns the difference between two sets.
+        /// </summary>
+        /// <typeparam name="T">The type of values included in the intervals.</typeparam>
+        /// <param name="setA">The source set.</param>
+        /// <param name="setB">The set to exclude.</param>
+        /// <returns>A set that contains every part of <paramref name="setA"/> that is not also contained by <paramref name="setB"/>.</returns>
+        public static IList<IInterval<T>> DifferenceWith<T>(this IEnumerable<IInterval<T>> setA, IEnumerable<IInterval<T>> setB) where T : IComparable<T>
+        {
+            if (setA.IsEmpty())
+            {
+                return null;
+            }
+            else if (setB.IsEmpty())
+            {
+                return setA.ToList();
+            }
+
+            List<IInterval<T>> results = null;
+
+            foreach (var intervalB in setB)
+            {
+                results = new List<IInterval<T>>();
+
+                foreach (var intervalA in setA)
+                {
+                    var diff = intervalA.DifferenceWith(intervalB);
+                    if (diff != null)
+                    {
+                        results.AddRange(diff);
+                    }
+                }
+
+                if (results.Count == 0)
+                {
+                    return null;
+                }
+
+                setA = results;
+            }
+
+            return results;
         }
 
         /// <summary>
@@ -240,6 +303,110 @@ namespace Intervals
                 startInclusive,
                 end,
                 endInclusive);
+        }
+
+        /// <summary>
+        /// Tests an interval to determine if it is empty.
+        /// </summary>
+        /// <typeparam name="T">The type of values included in the interval.</typeparam>
+        /// <param name="interval">The interval to test.</param>
+        /// <returns>true, if the interval is null or considered empty; false, otherwise.</returns>
+        /// <remarks>
+        /// If an interval has the same start and end values, but either the start or end value is not inclusive, the interval is empty.
+        /// An interval is also considered empty if its start value is greater than its end value.
+        /// </remarks>
+        public static bool IsEmpty<T>(this IInterval<T> interval) where T : IComparable<T>
+        {
+            if (interval == null)
+            {
+                return true;
+            }
+
+            var startToEnd = interval.Start.CompareTo(interval.End);
+            if (startToEnd > 0)
+            {
+                return true;
+            }
+            else if (startToEnd == 0 && (!interval.StartInclusive || !interval.EndInclusive))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Tests a set of intervals to see if it is empty.
+        /// </summary>
+        /// <typeparam name="T">The type of values included in the intervals.</typeparam>
+        /// <param name="set">The set of intervals to test.</param>
+        /// <returns>true, if the set is null or considered empty; false, otherwise.</returns>
+        /// <remarks>
+        /// See <see cref="IsEmpty&lt;T&gt;(IInterval&lt;T&gt;)"/> for remarks.
+        /// </remarks>
+        public static bool IsEmpty<T>(this IEnumerable<IInterval<T>> set) where T : IComparable<T>
+        {
+            if (set == null)
+            {
+                return true;
+            }
+
+            foreach (var interval in set)
+            {
+                if (!interval.IsEmpty())
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Returns a simplified version of a given set.
+        /// </summary>
+        /// <typeparam name="T">The type of values included in the intervals.</typeparam>
+        /// <param name="set">The set to simplify.</param>
+        /// <returns>The simplified set.</returns>
+        /// <remarks>
+        /// Sets can be simplified if any of their components intersect.
+        /// </remarks>
+        public static IList<IInterval<T>> Simplify<T>(this IEnumerable<IInterval<T>> set) where T : IComparable<T>
+        {
+            var list = (from r in set
+                        where !r.IsEmpty()
+                        orderby r.Start descending
+                        select r).ToList();
+
+            if (list.Count == 0)
+            {
+                return null;
+            }
+
+            Func<IInterval<T>> dequeue = () =>
+            {
+                var a = list[list.Count - 1];
+                list.RemoveAt(list.Count - 1);
+                return a;
+            };
+
+            var results = new Stack<IInterval<T>>();
+            results.Push(dequeue());
+
+            while (list.Count > 0)
+            {
+                var intervalA = results.Pop();
+                var intervalB = dequeue();
+
+                foreach (var result in intervalA.UnionWith(intervalB))
+                {
+                    results.Push(result);
+                }
+            }
+
+            return results.ToArray();
         }
 
         /// <summary>
@@ -419,173 +586,6 @@ namespace Intervals
             setB = setB ?? new IInterval<T>[0];
 
             return setA.Concat(setB).Simplify();
-        }
-
-        /// <summary>
-        /// Returns a simplified version of a given set.
-        /// </summary>
-        /// <typeparam name="T">The type of values included in the intervals.</typeparam>
-        /// <param name="set">The set to simplify.</param>
-        /// <returns>The simplified set.</returns>
-        /// <remarks>
-        /// Sets can be simplified if any of their components intersect.
-        /// </remarks>
-        public static IList<IInterval<T>> Simplify<T>(this IEnumerable<IInterval<T>> set) where T : IComparable<T>
-        {
-            var list = (from r in set
-                        where !r.IsEmpty()
-                        orderby r.Start descending
-                        select r).ToList();
-
-            if (list.Count == 0)
-            {
-                return null;
-            }
-
-            Func<IInterval<T>> dequeue = () =>
-            {
-                var a = list[list.Count - 1];
-                list.RemoveAt(list.Count - 1);
-                return a;
-            };
-
-            var results = new Stack<IInterval<T>>();
-            results.Push(dequeue());
-
-            while (list.Count > 0)
-            {
-                var intervalA = results.Pop();
-                var intervalB = dequeue();
-
-                foreach (var result in intervalA.UnionWith(intervalB))
-                {
-                    results.Push(result);
-                }
-            }
-
-            return results.ToArray();
-        }
-
-        /// <summary>
-        /// Returns the difference of one interval to another.
-        /// </summary>
-        /// <typeparam name="T">The type of values included in the intervals.</typeparam>
-        /// <param name="interval">The source interval.</param>
-        /// <param name="other">The interval to exclude.</param>
-        /// <returns>A set that contains every part of <paramref name="interval"/> that is not also contained by <paramref name="other"/>.</returns>
-        public static IList<IInterval<T>> DifferenceWith<T>(this IInterval<T> interval, IInterval<T> other) where T : IComparable<T>
-        {
-            if (interval.IsEmpty())
-            {
-                return null;
-            }
-
-            var intersection = interval.IntersectWith(other);
-
-            if (intersection.IsEmpty())
-            {
-                return new[] { interval };
-            }
-            else if (intersection == interval)
-            {
-                return null;
-            }
-
-            var intervals = new List<IInterval<T>>();
-
-            var startToStart = interval.Start.CompareTo(intersection.Start);
-
-            if (startToStart != 0 ||
-                (interval.StartInclusive && !intersection.StartInclusive))
-            {
-                intervals.Add(interval.Clone(
-                        interval.Start,
-                        interval.StartInclusive,
-                        intersection.Start,
-                        !intersection.StartInclusive));
-            }
-
-            var endToEnd = interval.End.CompareTo(intersection.End);
-
-            if (endToEnd != 0 ||
-                (interval.EndInclusive && !intersection.EndInclusive))
-            {
-                intervals.Add(interval.Clone(
-                        intersection.End,
-                        !intersection.EndInclusive,
-                        interval.End,
-                        interval.EndInclusive));
-            }
-
-            return intervals;
-        }
-
-        /// <summary>
-        /// Returns the difference between a set and an interval.
-        /// </summary>
-        /// <typeparam name="T">The type of values included in the intervals.</typeparam>
-        /// <param name="set">The source set.</param>
-        /// <param name="interval">The interval to exclude.</param>
-        /// <returns>A set that contains every part of <paramref name="set"/> that is not also contained by <paramref name="interval"/>.</returns>
-        public static IList<IInterval<T>> DifferenceWith<T>(this IEnumerable<IInterval<T>> set, IInterval<T> interval) where T : IComparable<T>
-        {
-            return set.DifferenceWith(new[] { interval });
-        }
-
-        /// <summary>
-        /// Returns the difference between an interval and a set.
-        /// </summary>
-        /// <typeparam name="T">The type of values included in the intervals.</typeparam>
-        /// <param name="interval">The source interval.</param>
-        /// <param name="set">The set to exclude.</param>
-        /// <returns>A set that contains every part of <paramref name="interval"/> that is not also contained by <paramref name="set"/>.</returns>
-        public static IList<IInterval<T>> DifferenceWith<T>(this IInterval<T> interval, IEnumerable<IInterval<T>> set) where T : IComparable<T>
-        {
-            return set.DifferenceWith(new[] { interval });
-        }
-
-        /// <summary>
-        /// Returns the difference between two sets.
-        /// </summary>
-        /// <typeparam name="T">The type of values included in the intervals.</typeparam>
-        /// <param name="setA">The source set.</param>
-        /// <param name="setB">The set to exclude.</param>
-        /// <returns>A set that contains every part of <paramref name="setA"/> that is not also contained by <paramref name="setB"/>.</returns>
-        public static IList<IInterval<T>> DifferenceWith<T>(this IEnumerable<IInterval<T>> setA, IEnumerable<IInterval<T>> setB) where T : IComparable<T>
-        {
-            if (setA.IsEmpty())
-            {
-                return null;
-            }
-            else if (setB.IsEmpty())
-            {
-                return setA.ToList();
-            }
-
-            List<IInterval<T>> results = null;
-
-            foreach (var intervalB in setB)
-            {
-                results = new List<IInterval<T>>();
-
-                foreach (var intervalA in setA)
-                {
-                    var diff = intervalA.DifferenceWith(intervalB);
-                    if (diff != null)
-                    {
-                        results.AddRange(diff);
-                    }
-                }
-
-                if (results.Count == 0)
-                {
-                    return null;
-                }
-
-                setA = results;
-            }
-
-            return results;
         }
     }
 }

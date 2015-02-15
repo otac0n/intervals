@@ -16,16 +16,6 @@ namespace Intervals
     public interface IInterval<T> where T : IComparable<T>
     {
         /// <summary>
-        /// Gets the starting value of this interval.
-        /// </summary>
-        T Start { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether or not the starting value of this interval is included in the interval.
-        /// </summary>
-        bool StartInclusive { get; }
-
-        /// <summary>
         /// Gets the ending value of this interval.
         /// </summary>
         T End { get; }
@@ -34,6 +24,16 @@ namespace Intervals
         /// Gets a value indicating whether or not the ending value of this interval is included in the interval.
         /// </summary>
         bool EndInclusive { get; }
+
+        /// <summary>
+        /// Gets the starting value of this interval.
+        /// </summary>
+        T Start { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether or not the starting value of this interval is included in the interval.
+        /// </summary>
+        bool StartInclusive { get; }
 
         /// <summary>
         /// Clones an interval with the specified values.

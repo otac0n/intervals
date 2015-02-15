@@ -14,9 +14,9 @@ namespace Intervals
     /// </summary>
     public class StringInterval : IInterval<int>
     {
-        private readonly int start;
         private readonly int length;
         private readonly string source;
+        private readonly int start;
         private readonly string value;
 
         /// <summary>
@@ -66,7 +66,33 @@ namespace Intervals
         }
 
         /// <summary>
-        /// Gets the string that this interval descries.
+        /// Gets the ending index of this interval.
+        /// </summary>
+        public int End
+        {
+            get { return this.start + this.length; }
+        }
+
+        bool IInterval<int>.EndInclusive
+        {
+            get { return false; }
+        }
+
+        bool IInterval<int>.StartInclusive
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// Gets the length of this interval.
+        /// </summary>
+        public int Length
+        {
+            get { return this.length; }
+        }
+
+        /// <summary>
+        /// Gets the string that this interval describes.
         /// </summary>
         public string Source
         {
@@ -82,37 +108,11 @@ namespace Intervals
         }
 
         /// <summary>
-        /// Gets the length of this interval.
-        /// </summary>
-        public int Length
-        {
-            get { return this.length; }
-        }
-
-        /// <summary>
-        /// Gets the ending index of this interval.
-        /// </summary>
-        public int End
-        {
-            get { return this.start + this.length; }
-        }
-
-        /// <summary>
         /// Gets the portion of the string represented by this interval.
         /// </summary>
         public string Value
         {
             get { return this.value; }
-        }
-
-        bool IInterval<int>.StartInclusive
-        {
-            get { return true; }
-        }
-
-        bool IInterval<int>.EndInclusive
-        {
-            get { return false; }
         }
 
         IInterval<int> IInterval<int>.Clone(int start, bool startInclusive, int end, bool endInclusive)

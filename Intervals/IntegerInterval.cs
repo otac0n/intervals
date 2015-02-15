@@ -7,20 +7,15 @@
 
 namespace Intervals
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-
     /// <summary>
     /// Represents an interval between integers.
     /// </summary>
     public class IntegerInterval : IInterval<int>
     {
-        private readonly int start;
-        private readonly bool startInclusive;
         private readonly int end;
         private readonly bool endInclusive;
+        private readonly int start;
+        private readonly bool startInclusive;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntegerInterval"/> class.
@@ -38,22 +33,6 @@ namespace Intervals
         }
 
         /// <summary>
-        /// Gets the starting value of this interval.
-        /// </summary>
-        public int Start
-        {
-            get { return this.start; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether or not the starting value of this interval is included in the interval.
-        /// </summary>
-        public bool StartInclusive
-        {
-            get { return this.startInclusive; }
-        }
-
-        /// <summary>
         /// Gets the ending value of this interval.
         /// </summary>
         public int End
@@ -67,6 +46,22 @@ namespace Intervals
         public bool EndInclusive
         {
             get { return this.endInclusive; }
+        }
+
+        /// <summary>
+        /// Gets the starting value of this interval.
+        /// </summary>
+        public int Start
+        {
+            get { return this.start; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether or not the starting value of this interval is included in the interval.
+        /// </summary>
+        public bool StartInclusive
+        {
+            get { return this.startInclusive; }
         }
 
         /// <summary>
