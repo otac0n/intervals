@@ -1,9 +1,4 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="IntervalExtensions.cs" company="(none)">
-//  Copyright © 2012 John Gietzen. All rights reserved.
-// </copyright>
-// <author>John Gietzen</author>
-//-----------------------------------------------------------------------
+﻿// Copyright © John Gietzen. All Rights Reserved. This source is subject to the MIT license. Please see license.md for more information.
 
 namespace Intervals
 {
@@ -23,7 +18,8 @@ namespace Intervals
         /// <param name="interval">The interval to test.</param>
         /// <param name="value">The value to test.</param>
         /// <returns>true, if the interval is non-empty and contains the value; false, otherwise.</returns>
-        public static bool Contains<T>(this IInterval<T> interval, T value) where T : IComparable<T>
+        public static bool Contains<T>(this IInterval<T> interval, T value)
+            where T : IComparable<T>
         {
             if (interval.IsEmpty())
             {
@@ -59,7 +55,8 @@ namespace Intervals
         /// All intervals (including empty ones) contain every other empty interval.  So, if <paramref name="other"/> is empty, this method always returns true.
         /// Otherwise, this method only returns true if the start and end values of <paramref name="interval"/> surround the values of <paramref name="other"/>.
         /// </remarks>
-        public static bool Contains<T>(this IInterval<T> interval, IInterval<T> other) where T : IComparable<T>
+        public static bool Contains<T>(this IInterval<T> interval, IInterval<T> other)
+            where T : IComparable<T>
         {
             if (other.IsEmpty())
             {
@@ -79,7 +76,8 @@ namespace Intervals
         /// <param name="set">The set to test.</param>
         /// <param name="value">The value to test.</param>
         /// <returns>true, if the set is non-empty and at least on of its intervals contains the value; false, otherwise.</returns>
-        public static bool Contains<T>(this IEnumerable<IInterval<T>> set, T value) where T : IComparable<T>
+        public static bool Contains<T>(this IEnumerable<IInterval<T>> set, T value)
+            where T : IComparable<T>
         {
             foreach (var interval in set)
             {
@@ -99,7 +97,8 @@ namespace Intervals
         /// <param name="interval">The source interval.</param>
         /// <param name="other">The interval to exclude.</param>
         /// <returns>A set that contains every part of <paramref name="interval"/> that is not also contained by <paramref name="other"/>.</returns>
-        public static IList<IInterval<T>> DifferenceWith<T>(this IInterval<T> interval, IInterval<T> other) where T : IComparable<T>
+        public static IList<IInterval<T>> DifferenceWith<T>(this IInterval<T> interval, IInterval<T> other)
+            where T : IComparable<T>
         {
             if (interval.IsEmpty())
             {
@@ -165,7 +164,8 @@ namespace Intervals
         /// <param name="interval">The source interval.</param>
         /// <param name="set">The set to exclude.</param>
         /// <returns>A set that contains every part of <paramref name="interval"/> that is not also contained by <paramref name="set"/>.</returns>
-        public static IList<IInterval<T>> DifferenceWith<T>(this IInterval<T> interval, IEnumerable<IInterval<T>> set) where T : IComparable<T>
+        public static IList<IInterval<T>> DifferenceWith<T>(this IInterval<T> interval, IEnumerable<IInterval<T>> set)
+            where T : IComparable<T>
         {
             return set.DifferenceWith(new[] { interval });
         }

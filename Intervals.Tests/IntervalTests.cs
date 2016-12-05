@@ -1,9 +1,4 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="IntervalTests.cs" company="(none)">
-//  Copyright © 2012 John Gietzen. All rights reserved.
-// </copyright>
-// <author>John Gietzen</author>
-//-----------------------------------------------------------------------
+﻿// Copyright © John Gietzen. All Rights Reserved. This source is subject to the MIT license. Please see license.md for more information.
 
 namespace Intervals.Tests
 {
@@ -733,7 +728,7 @@ namespace Intervals.Tests
         }
 
         [Test]
-        public void DifferenceWith_WhenSetEsExcluded_ReturnsEmpty()
+        public void DifferenceWith_WhenSetIsExcluded_ReturnsEmpty()
         {
             var set = new[]
             {

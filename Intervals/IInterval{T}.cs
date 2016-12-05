@@ -1,9 +1,4 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="IInterval{T}.cs" company="(none)">
-//  Copyright © 2012 John Gietzen. All rights reserved.
-// </copyright>
-// <author>John Gietzen</author>
-//-----------------------------------------------------------------------
+﻿// Copyright © John Gietzen. All Rights Reserved. This source is subject to the MIT license. Please see license.md for more information.
 
 namespace Intervals
 {
@@ -13,7 +8,8 @@ namespace Intervals
     /// Represents an interval of comparable values.
     /// </summary>
     /// <typeparam name="T">The type of values included in the interval.</typeparam>
-    public interface IInterval<T> where T : IComparable<T>
+    public interface IInterval<T>
+        where T : IComparable<T>
     {
         /// <summary>
         /// Gets the ending value of this interval.
