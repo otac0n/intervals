@@ -2,90 +2,92 @@
 
 namespace Intervals.Tests
 {
+    using System.Collections.Generic;
     using System.Linq;
     using NUnit.Framework;
 
     [TestFixture]
     public class IntervalTests
     {
-        public static readonly bool[] Booleans = { false, true };
-        public static readonly int[] Integers = { -3, -2, -1, 0, 1, 2, 3 };
+        public static readonly IntegerInterval[] AllIntervals;
+        public static readonly bool[] Booleans;
+        public static readonly IntegerInterval[] EmptyIntervals;
+        public static readonly int[] Integers;
+        public static readonly IntegerInterval[] NonEmptyIntervals;
+        public static readonly IntegerInterval[] PointIntervals;
+        public static readonly IntegerInterval[] SegmentIntervals;
 
-        [Test]
-        [Pairwise]
-        public void Contains_FromEmptyInterval_ReturnsFalse(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Integers")] int bStart,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Integers")] int bEnd,
-            [ValueSource("Booleans")] bool bEndInclusive)
+        static IntervalTests()
         {
-            var intervalA = new IntegerInterval(1, aStartInclusive, 0, aEndInclusive);
-            var intervalB = new IntegerInterval(bStart, bStartInclusive, bEnd, bEndInclusive);
+            Booleans = new[] { false, true };
+            Integers = new[] { -3, -2, -1, 0, 1, 2, 3 };
 
-            Assume.That(!intervalB.IsEmpty());
+            EmptyIntervals = new[]
+            {
+                null,
+                new IntegerInterval(3, true, -3, true),
+                new IntegerInterval(0, true, 0, false),
+                new IntegerInterval(2, false, 2, true),
+            };
 
-            var result = intervalA.Contains(intervalB);
+            PointIntervals = Integers.Select(i => new IntegerInterval(i, true, i, true)).ToArray();
 
-            Assert.That(result, Is.False);
+            var segments = new List<IntegerInterval>();
+            foreach (var i in Integers)
+            {
+                foreach (var j in Integers)
+                {
+                    if (i < j)
+                    {
+                        segments.Add(new IntegerInterval(i, true, j, false));
+                        segments.Add(new IntegerInterval(i, false, j, true));
+                        segments.Add(new IntegerInterval(i, true, j, true));
+                        segments.Add(new IntegerInterval(i, false, j, false));
+                    }
+                }
+            }
+
+            SegmentIntervals = segments.ToArray();
+            NonEmptyIntervals = new[] { PointIntervals, SegmentIntervals }.SelectMany(x => x).ToArray();
+            AllIntervals = new[] { EmptyIntervals, NonEmptyIntervals }.SelectMany(x => x).ToArray();
         }
 
         [Test]
-        public void Contains_InDegenerateInterval_ReturnsTrue(
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusively)
+        public void Contains_AnyInterval_EmptyInterval_ReturnsTrue(
+            [ValueSource(nameof(AllIntervals))] IntegerInterval intervalA,
+            [ValueSource(nameof(EmptyIntervals))] IntegerInterval intervalB)
         {
-            var intervalA = new IntegerInterval(0, true, 0, true);
-            var intervalB = new IntegerInterval(0, bStartInclusive, 0, bEndInclusively);
+            var actual = intervalA.Contains(intervalB);
 
-            var result = intervalA.Contains(intervalB);
-
-            Assert.That(result, Is.True);
+            Assert.That(actual, Is.True);
         }
 
         [Test]
-        [Pairwise]
-        public void Contains_WithEmptyInterval_ReturnsFalse(
-            [ValueSource("Integers")] int start,
-            [ValueSource("Integers")] int end,
-            [ValueSource("Booleans")] bool startInclusive,
-            [ValueSource("Booleans")] bool endInclusive,
-            [ValueSource("Integers")] int value)
+        public void Contains_EmptyInterval_AnyValue_ReturnsFalse(
+            [ValueSource(nameof(EmptyIntervals))] IntegerInterval interval,
+            [ValueSource(nameof(Integers))] int value)
         {
-            Assume.That(start > end);
+            var actual = interval.Contains(value);
 
-            var interval = new IntegerInterval(start, startInclusive, end, endInclusive);
-
-            var result = interval.Contains(value);
-
-            Assert.That(result, Is.False);
+            Assert.That(actual, Is.False);
         }
 
         [Test]
-        [Pairwise]
-        public void Contains_WithEmptyInterval_ReturnsTrue(
-            [ValueSource("Integers")] int aStart,
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Integers")] int aEnd,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+        public void Contains_EmptyInterval_NonEmptyInterval_ReturnsFalse(
+            [ValueSource(nameof(EmptyIntervals))] IntegerInterval intervalA,
+            [ValueSource(nameof(NonEmptyIntervals))] IntegerInterval intervalB)
         {
-            var intervalA = new IntegerInterval(aStart, aStartInclusive, aEnd, aEndInclusive);
-            var intervalB = new IntegerInterval(1, bStartInclusive, 0, bEndInclusive);
+            var actual = intervalA.Contains(intervalB);
 
-            var result = intervalA.Contains(intervalB);
-
-            Assert.That(result, Is.True);
+            Assert.That(actual, Is.False);
         }
 
         [Test]
         [Pairwise]
         public void Contains_WithEndAdjacentZeroIntervalExcluded_ReturnsFalse(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusively)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusively)
         {
             var intervalA = new IntegerInterval(0, aStartInclusive, 3, false);
             var intervalB = new IntegerInterval(3, bStartInclusive, 3, bEndInclusively);
@@ -100,9 +102,9 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void Contains_WithEndAdjacentZeroIntervalIncluded_ReturnsTrue(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusively)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusively)
         {
             var intervalA = new IntegerInterval(0, aStartInclusive, 3, true);
             var intervalB = new IntegerInterval(3, bStartInclusive, 3, bEndInclusively);
@@ -115,9 +117,9 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void Contains_WithExclusiveEnd_ReturnsFalse(
-            [ValueSource("Integers")] int start,
-            [ValueSource("Integers")] int end,
-            [ValueSource("Booleans")] bool startInclusive)
+            [ValueSource(nameof(Integers))] int start,
+            [ValueSource(nameof(Integers))] int end,
+            [ValueSource(nameof(Booleans))] bool startInclusive)
         {
             Assume.That(start <= end);
 
@@ -131,9 +133,9 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void Contains_WithExclusiveStart_ReturnsFalse(
-            [ValueSource("Integers")] int start,
-            [ValueSource("Integers")] int end,
-            [ValueSource("Booleans")] bool endInclusive)
+            [ValueSource(nameof(Integers))] int start,
+            [ValueSource(nameof(Integers))] int end,
+            [ValueSource(nameof(Booleans))] bool endInclusive)
         {
             Assume.That(start <= end);
 
@@ -147,10 +149,10 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void Contains_WithFullyContainedInterval_ReturnsTrue(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             var intervalA = new IntegerInterval(0, aStartInclusive, 3, aEndInclusive);
             var intervalB = new IntegerInterval(1, bStartInclusive, 2, bEndInclusive);
@@ -161,17 +163,11 @@ namespace Intervals.Tests
         }
 
         [Test]
-        [Pairwise]
         public void Contains_WithIncludedValue_ReturnsTrue(
-            [ValueSource("Integers")] int start,
-            [ValueSource("Integers")] int end,
-            [ValueSource("Integers")] int value,
-            [ValueSource("Booleans")] bool startInclusive,
-            [ValueSource("Booleans")] bool endInclusive)
+            [ValueSource(nameof(SegmentIntervals))] IntegerInterval interval,
+            [ValueSource(nameof(Integers))] int value)
         {
-            Assume.That(start < value && value < end);
-
-            var interval = new IntegerInterval(start, startInclusive, end, endInclusive);
+            Assume.That(interval != null && interval.Start < value && value < interval.End);
 
             var result = interval.Contains(value);
 
@@ -181,9 +177,9 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void Contains_WithInclusiveEnd_ReturnsTrue(
-            [ValueSource("Integers")] int start,
-            [ValueSource("Integers")] int end,
-            [ValueSource("Booleans")] bool startInclusive)
+            [ValueSource(nameof(Integers))] int start,
+            [ValueSource(nameof(Integers))] int end,
+            [ValueSource(nameof(Booleans))] bool startInclusive)
         {
             Assume.That(start < end);
 
@@ -197,9 +193,9 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void Contains_WithInclusiveStart_ReturnsTrue(
-            [ValueSource("Integers")] int start,
-            [ValueSource("Integers")] int end,
-            [ValueSource("Booleans")] bool endInclusive)
+            [ValueSource(nameof(Integers))] int start,
+            [ValueSource(nameof(Integers))] int end,
+            [ValueSource(nameof(Booleans))] bool endInclusive)
         {
             Assume.That(start < end);
 
@@ -212,8 +208,8 @@ namespace Intervals.Tests
 
         [Test]
         public void Contains_WithIntervalAdjacentlyExcludedAtEnd_ReturnsTrue(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive)
         {
             var intervalA = new IntegerInterval(0, aStartInclusive, 3, false);
             var intervalB = new IntegerInterval(1, bStartInclusive, 3, true);
@@ -225,8 +221,8 @@ namespace Intervals.Tests
 
         [Test]
         public void Contains_WithIntervalAdjacentlyExcludedAtStart_ReturnsFalse(
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             var intervalA = new IntegerInterval(0, false, 3, aEndInclusive);
             var intervalB = new IntegerInterval(0, true, 2, bEndInclusive);
@@ -239,9 +235,9 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void Contains_WithIntervalAdjacentlyIncludedAtEnd_ReturnsTrue(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             var intervalA = new IntegerInterval(0, aStartInclusive, 3, true);
             var intervalB = new IntegerInterval(1, bStartInclusive, 3, bEndInclusive);
@@ -254,9 +250,9 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void Contains_WithIntervalAdjacentlyIncludedAtStart_ReturnsTrue(
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             var intervalA = new IntegerInterval(0, true, 3, aEndInclusive);
             var intervalB = new IntegerInterval(0, bStartInclusive, 2, bEndInclusive);
@@ -269,10 +265,10 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void Contains_WithNonIntersectingInterval_ReturnsFalse(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             var intervalA = new IntegerInterval(0, aStartInclusive, 1, aEndInclusive);
             var intervalB = new IntegerInterval(2, bStartInclusive, 3, bEndInclusive);
@@ -284,7 +280,7 @@ namespace Intervals.Tests
 
         [Test]
         public void Contains_WithNullInvterval_ReturnsFalse(
-            [ValueSource("Integers")] int value)
+            [ValueSource(nameof(Integers))] int value)
         {
             IntegerInterval interval = null;
 
@@ -317,9 +313,9 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void Contains_WithStartAdjacentZeroIntervalExcluded_ReturnsFalse(
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusively)
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusively)
         {
             var intervalA = new IntegerInterval(0, false, 3, aEndInclusive);
             var intervalB = new IntegerInterval(0, bStartInclusive, 0, bEndInclusively);
@@ -334,9 +330,9 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void Contains_WithStartAdjacentZeroIntervalIncluded_ReturnsTrue(
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusively)
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusively)
         {
             var intervalA = new IntegerInterval(0, true, 3, aEndInclusive);
             var intervalB = new IntegerInterval(0, bStartInclusive, 0, bEndInclusively);
@@ -348,8 +344,8 @@ namespace Intervals.Tests
 
         [Test]
         public void Contains_WithZeroIntervalExclusive_ReturnsFalse(
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusively)
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusively)
         {
             var intervalA = new IntegerInterval(0, false, 0, false);
             var intervalB = new IntegerInterval(0, bStartInclusive, 0, bEndInclusively);
@@ -365,10 +361,10 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void Contains_WithZeroLengthAndExclusiveStartOrEnd_ReturnsFalse(
-            [ValueSource("Integers")] int startAndEnd,
-            [ValueSource("Booleans")] bool startInclusive,
-            [ValueSource("Booleans")] bool endInclusive,
-            [ValueSource("Integers")] int value)
+            [ValueSource(nameof(Integers))] int startAndEnd,
+            [ValueSource(nameof(Booleans))] bool startInclusive,
+            [ValueSource(nameof(Booleans))] bool endInclusive,
+            [ValueSource(nameof(Integers))] int value)
         {
             Assume.That(!startInclusive || !endInclusive);
 
@@ -380,11 +376,10 @@ namespace Intervals.Tests
         }
 
         [Test]
-        public void DifferenceWith_FromEmptyInterval_ReturnsNull()
+        public void DifferenceWith_EmptyInterval_AnyInterval_ReturnsNull(
+            [ValueSource(nameof(EmptyIntervals))] IntegerInterval intervalA,
+            [ValueSource(nameof(AllIntervals))] IntegerInterval intervalB)
         {
-            var intervalA = new IntegerInterval(2, false, 2, false);
-            var intervalB = new IntegerInterval(0, false, 3, false);
-
             var actual = intervalA.DifferenceWith(intervalB);
 
             Assert.That(actual, Is.Null);
@@ -507,18 +502,20 @@ namespace Intervals.Tests
         }
 
         [Test]
-        [Pairwise]
-        public void IntersectWith_FromEmptyInterval_ReturnsNull(
-            [ValueSource("Integers")] int aStart,
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Integers")] int aEnd,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+        public void IntersectWith_AnyInterval_EmptyInterval_ReturnsNull(
+            [ValueSource(nameof(AllIntervals))] IntegerInterval intervalA,
+            [ValueSource(nameof(EmptyIntervals))] IntegerInterval intervalB)
         {
-            var intervalA = new IntegerInterval(aStart, aStartInclusive, aEnd, aEndInclusive);
-            var intervalB = new IntegerInterval(1, bStartInclusive, 0, bEndInclusive);
+            var actual = intervalA.IntersectWith(intervalB);
 
+            Assert.That(actual, Is.Null);
+        }
+
+        [Test]
+        public void IntersectWith_EmptyInterval_AnyInterval_ReturnsNull(
+            [ValueSource(nameof(EmptyIntervals))] IntegerInterval intervalA,
+            [ValueSource(nameof(AllIntervals))] IntegerInterval intervalB)
+        {
             var actual = intervalA.IntersectWith(intervalB);
 
             Assert.That(actual, Is.Null);
@@ -527,10 +524,10 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void IntersectWith_WhenIntervalsAreSameSize_ReturnsIntervalWithMostRestrictedInclusivity(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             var intervalA = new IntegerInterval(0, aStartInclusive, 3, aEndInclusive);
             var intervalB = new IntegerInterval(0, bStartInclusive, 3, bEndInclusive);
@@ -546,10 +543,10 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void IntersectWith_WhenIntervalsAreSameSizeAndOtherIntervalMatchesMostRestrictive_ReturnsOtherInterval(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             Assume.That(aStartInclusive || aEndInclusive);
             Assume.That(aStartInclusive || (!aStartInclusive && !bStartInclusive));
@@ -567,10 +564,10 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void IntersectWith_WhenIntervalsAreSameSizeAndThisIntervalMatchesMostRestrictive_ReturnsThisInterval(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             Assume.That(bStartInclusive || bEndInclusive);
             Assume.That(bStartInclusive || (!bStartInclusive && !aStartInclusive));
@@ -587,10 +584,10 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void IntersectWith_WhenIntervalsDoNotIntersect_ReturnsNull(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             var intervalA = new IntegerInterval(0, aStartInclusive, 1, aEndInclusive);
             var intervalB = new IntegerInterval(2, bStartInclusive, 3, bEndInclusive);
@@ -603,10 +600,10 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void IntersectWith_WhenIntervalsIntersectInAInterval_ReturnsThatIntervalWithMatchingInclusivity(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             var intervalA = new IntegerInterval(0, aStartInclusive, 2, aEndInclusive);
             var intervalB = new IntegerInterval(1, bStartInclusive, 3, bEndInclusive);
@@ -622,10 +619,10 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void IntersectWith_WhenIntervalsIntersectInAIntervalReversed_ReturnsThatIntervalWithMatchingInclusivity(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             var intervalA = new IntegerInterval(0, aStartInclusive, 2, aEndInclusive);
             var intervalB = new IntegerInterval(1, bStartInclusive, 3, bEndInclusive);
@@ -641,10 +638,10 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void IntersectWith_WhenIntervalsIntersectInAnExclusivePoint_ReturnsNull(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             Assume.That(!aEndInclusive || !bStartInclusive);
 
@@ -658,8 +655,8 @@ namespace Intervals.Tests
 
         [Test]
         public void IntersectWith_WhenIntervalsIntersectInAPoint_ReturnsThatPointWithMatchingInclusivity(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             var intervalA = new IntegerInterval(0, aStartInclusive, 2, true);
             var intervalB = new IntegerInterval(2, true, 3, bEndInclusive);
@@ -674,13 +671,13 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void IntersectWith_WhenOtherIntervalIsEmpty_ReturnsNull(
-            [ValueSource("Integers")] int aStart,
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Integers")] int aEnd,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Integers")] int bStartAndEnd,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Integers))] int aStart,
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Integers))] int aEnd,
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Integers))] int bStartAndEnd,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             Assume.That(!bStartInclusive || !bEndInclusive);
 
@@ -695,13 +692,13 @@ namespace Intervals.Tests
         [Test]
         [Pairwise]
         public void IntersectWith_WhenThisIntervalIsEmpty_ReturnsNull(
-            [ValueSource("Integers")] int aStartAndEnd,
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Integers")] int bStart,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Integers")] int bEnd,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Integers))] int aStartAndEnd,
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Integers))] int bStart,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Integers))] int bEnd,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             Assume.That(!aStartInclusive || !aEndInclusive);
 
@@ -714,42 +711,24 @@ namespace Intervals.Tests
         }
 
         [Test]
-        [Pairwise]
-        public void IntersectWith_WithEmptyInterval_ReturnsNull(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Integers")] int bStart,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Integers")] int bEnd,
-            [ValueSource("Booleans")] bool bEndInclusive)
-        {
-            var intervalA = new IntegerInterval(1, aStartInclusive, 0, aEndInclusive);
-            var intervalB = new IntegerInterval(bStart, bStartInclusive, bEnd, bEndInclusive);
-
-            var actual = intervalA.IntersectWith(intervalB);
-
-            Assert.That(actual, Is.Null);
-        }
-
-        [Test]
         public void IntersectWith_WithSameInterval_ReturnsOriginalReference(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool aEndInclusive)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool aEndInclusive)
         {
             var intervalA = new IntegerInterval(0, aStartInclusive, 3, aEndInclusive);
 
             var actual = intervalA.IntersectWith(intervalA);
 
-            Assert.That(actual, Is.EqualTo(intervalA));
+            Assert.That(actual, Is.SameAs(intervalA));
         }
 
         [Test]
         [Pairwise]
         public void IntersectWith_WithWhollyContianedInterval_ReturnsContainedInterval(
-            [ValueSource("Booleans")] bool aStartInclusive,
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive,
-            [ValueSource("Booleans")] bool bEndInclusive)
+            [ValueSource(nameof(Booleans))] bool aStartInclusive,
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive,
+            [ValueSource(nameof(Booleans))] bool bEndInclusive)
         {
             var intervalA = new IntegerInterval(0, aStartInclusive, 3, aEndInclusive);
             var intervalB = new IntegerInterval(1, bStartInclusive, 2, bEndInclusive);
@@ -760,74 +739,21 @@ namespace Intervals.Tests
         }
 
         [Test]
-        [Pairwise]
-        public void IsEmpty_WithBackwardsSet_ReturnsTrue(
-            [ValueSource("Integers")] int start,
-            [ValueSource("Integers")] int end,
-            [ValueSource("Booleans")] bool startInclusive,
-            [ValueSource("Booleans")] bool endInclusive)
+        public void IsEmpty_EmptyInterval_ReturnsTrue(
+            [ValueSource(nameof(EmptyIntervals))] IntegerInterval intervalA)
         {
-            Assume.That(start > end);
-
-            var intervalA = new IntegerInterval(start, startInclusive, end, endInclusive);
-
             var actual = intervalA.IsEmpty();
 
             Assert.That(actual, Is.True);
         }
 
         [Test]
-        [Pairwise]
-        public void IsEmpty_WithInOrderSetSet_ReturnsFalse(
-            [ValueSource("Integers")] int start,
-            [ValueSource("Integers")] int end,
-            [ValueSource("Booleans")] bool startInclusive,
-            [ValueSource("Booleans")] bool endInclusive)
+        public void IsEmpty_NonEmptyInterval_ReturnsFalse(
+            [ValueSource(nameof(NonEmptyIntervals))] IntegerInterval intervalA)
         {
-            Assume.That(start < end);
-
-            var intervalA = new IntegerInterval(start, startInclusive, end, endInclusive);
-
             var actual = intervalA.IsEmpty();
 
             Assert.That(actual, Is.False);
-        }
-
-        [Test]
-        public void IsEmpty_WithNonSelfExcludedSet_ReturnsFalse(
-            [ValueSource("Integers")] int startAndEnd)
-        {
-            var intervalA = new IntegerInterval(startAndEnd, true, startAndEnd, true);
-
-            var actual = intervalA.IsEmpty();
-
-            Assert.That(actual, Is.False);
-        }
-
-        [Test]
-        public void IsEmpty_WithNullSet_ReturnsTrue()
-        {
-            IntegerInterval intervalA = null;
-
-            var actual = intervalA.IsEmpty();
-
-            Assert.That(actual, Is.True);
-        }
-
-        [Test]
-        [Pairwise]
-        public void IsEmpty_WithSelfExcludedSet_ReturnsTrue(
-            [ValueSource("Integers")] int startAndEnd,
-            [ValueSource("Booleans")] bool startInclusive,
-            [ValueSource("Booleans")] bool endInclusive)
-        {
-            Assume.That(!startInclusive || !endInclusive);
-
-            var intervalA = new IntegerInterval(startAndEnd, startInclusive, startAndEnd, endInclusive);
-
-            var actual = intervalA.IsEmpty();
-
-            Assert.That(actual, Is.True);
         }
 
         [Test]
@@ -872,8 +798,8 @@ namespace Intervals.Tests
 
         [Test]
         public void UnionWith_WhenIntervalsIntersectAtAnIncludedPoint_ReturnsASingleIntervalThatContainsBothIntervals(
-            [ValueSource("Booleans")] bool aEndInclusive,
-            [ValueSource("Booleans")] bool bStartInclusive)
+            [ValueSource(nameof(Booleans))] bool aEndInclusive,
+            [ValueSource(nameof(Booleans))] bool bStartInclusive)
         {
             Assume.That(aEndInclusive || bStartInclusive);
 

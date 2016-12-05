@@ -5,7 +5,7 @@ namespace Intervals
     /// <summary>
     /// Represents an interval between integers.
     /// </summary>
-    public class IntegerInterval : IInterval<int>
+    public sealed class IntegerInterval : IInterval<int>
     {
         private readonly int end;
         private readonly bool endInclusive;
@@ -60,19 +60,6 @@ namespace Intervals
         }
 
         /// <summary>
-        /// Returns a new interval with the specified values.
-        /// </summary>
-        /// <param name="start">The new starting value.</param>
-        /// <param name="startInclusive">A value indicating whether or not the new starting value is included in the new interval.</param>
-        /// <param name="end">The new ending value.</param>
-        /// <param name="endInclusive">A value indicating whether or not the new ending value is included in the new interval.</param>
-        /// <returns>A new interval with the specified values.</returns>
-        public IntegerInterval Clone(int start, bool startInclusive, int end, bool endInclusive)
-        {
-            return new IntegerInterval(start, startInclusive, end, endInclusive);
-        }
-
-        /// <summary>
         /// Clones an interval with the specified values.
         /// </summary>
         /// <param name="start">The new starting value.</param>
@@ -82,7 +69,7 @@ namespace Intervals
         /// <returns>A copy of this interval with the specified values.</returns>
         IInterval<int> IInterval<int>.Clone(int start, bool startInclusive, int end, bool endInclusive)
         {
-            return this.Clone(start, startInclusive, end, endInclusive);
+            return new IntegerInterval(start, startInclusive, end, endInclusive);
         }
 
         /// <summary>

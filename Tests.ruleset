@@ -2,6 +2,7 @@
 <RuleSet Name="Tests" Description="A test ruleset based on the Strict ruleset." ToolsVersion="14.0">
   <Include Path="strict.ruleset" Action="Default" />
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
+    <Rule Id="CA1011" Action="None" />
     <Rule Id="CA1305" Action="None" />
     <Rule Id="CA1702" Action="None" />
     <Rule Id="CA1704" Action="None" />

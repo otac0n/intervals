@@ -3,6 +3,7 @@
 namespace Intervals
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Represents an interval of comparable values.
@@ -14,6 +15,7 @@ namespace Intervals
         /// <summary>
         /// Gets the ending value of this interval.
         /// </summary>
+        [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", MessageId = "End", Justification = "This cannot be changed.")]
         T End { get; }
 
         /// <summary>
@@ -39,6 +41,7 @@ namespace Intervals
         /// <param name="end">The new ending value.</param>
         /// <param name="endInclusive">A value indicating whether or not the new ending value is included in the new interval.</param>
         /// <returns>A copy of this interval with the specified values.</returns>
+        [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", MessageId = "End", Justification = "This cannot be changed.")]
         IInterval<T> Clone(T start, bool startInclusive, T end, bool endInclusive);
     }
 }

@@ -7,7 +7,7 @@ namespace Intervals
     /// <summary>
     /// Represents an interval of characters in a string.
     /// </summary>
-    public class StringInterval : IInterval<int>
+    public sealed class StringInterval : IInterval<int>
     {
         private readonly int length;
         private readonly string source;

@@ -19,7 +19,7 @@ namespace Intervals
         /// <param name="interval">The interval to test.</param>
         /// <param name="value">The value to test.</param>
         /// <returns>true, if the interval is non-empty and contains the value; false, otherwise.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Covered by test Contains_WithNullInvterval_ReturnsFalse.")]
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Covered by tests.")]
         public static bool Contains<T>(this IInterval<T> interval, T value)
             where T : IComparable<T>
         {
@@ -81,6 +81,12 @@ namespace Intervals
         public static bool Contains<T>(this IEnumerable<IInterval<T>> set, T value)
             where T : IComparable<T>
         {
+            // TODO: Add tests to make sure that this method doesn't enumerate set more than once.
+            if (set == null)
+            {
+                return false;
+            }
+
             foreach (var interval in set)
             {
                 if (interval.Contains(value))
@@ -99,6 +105,7 @@ namespace Intervals
         /// <param name="interval">The source interval.</param>
         /// <param name="other">The interval to exclude.</param>
         /// <returns>A set that contains every part of <paramref name="interval"/> that is not also contained by <paramref name="other"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Covered by tests.")]
         public static IList<IInterval<T>> DifferenceWith<T>(this IInterval<T> interval, IInterval<T> other)
             where T : IComparable<T>
         {
@@ -157,6 +164,7 @@ namespace Intervals
         public static IList<IInterval<T>> DifferenceWith<T>(this IEnumerable<IInterval<T>> set, IInterval<T> interval)
             where T : IComparable<T>
         {
+            // TODO: Add tests to make sure that this method doesn't enumerate set more than once.
             return set.DifferenceWith(new[] { interval });
         }
 
@@ -170,6 +178,7 @@ namespace Intervals
         public static IList<IInterval<T>> DifferenceWith<T>(this IInterval<T> interval, IEnumerable<IInterval<T>> set)
             where T : IComparable<T>
         {
+            // TODO: Add tests to make sure that this method doesn't enumerate set more than once.
             return set.DifferenceWith(new[] { interval });
         }
 
@@ -180,9 +189,11 @@ namespace Intervals
         /// <param name="setA">The source set.</param>
         /// <param name="setB">The set to exclude.</param>
         /// <returns>A set that contains every part of <paramref name="setA"/> that is not also contained by <paramref name="setB"/>.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Covered by tests.")]
         public static IList<IInterval<T>> DifferenceWith<T>(this IEnumerable<IInterval<T>> setA, IEnumerable<IInterval<T>> setB)
             where T : IComparable<T>
         {
+            // TODO: Add tests to make sure that this method doesn't enumerate setA or setB more than once.
             if (setA.IsEmpty())
             {
                 return null;
@@ -225,6 +236,8 @@ namespace Intervals
         /// <param name="interval">The first interval.</param>
         /// <param name="other">The second interval.</param>
         /// <returns>An interval that represents the intersection of the intervals.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Covered by tests.")]
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Covered by tests.")]
         public static IInterval<T> IntersectWith<T>(this IInterval<T> interval, IInterval<T> other)
             where T : IComparable<T>
         {
@@ -355,6 +368,7 @@ namespace Intervals
         public static bool IsEmpty<T>(this IEnumerable<IInterval<T>> set)
             where T : IComparable<T>
         {
+            // TODO: Add tests to make sure that this method doesn't enumerate set more than once.
             if (set == null)
             {
                 return true;
@@ -383,6 +397,7 @@ namespace Intervals
         public static IList<IInterval<T>> Simplify<T>(this IEnumerable<IInterval<T>> set)
             where T : IComparable<T>
         {
+            // TODO: Add tests to make sure that this method doesn't enumerate set more than once.
             var list = (from r in set
                         where !r.IsEmpty()
                         orderby r.Start descending
@@ -427,6 +442,8 @@ namespace Intervals
         /// <remarks>
         /// If the intervals intersect, the result will be a set with a single interval.
         /// </remarks>
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Covered by tests.")]
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Justification = "Covered by tests.")]
         public static IList<IInterval<T>> UnionWith<T>(this IInterval<T> interval, IInterval<T> other)
             where T : IComparable<T>
         {
@@ -568,6 +585,7 @@ namespace Intervals
         public static IList<IInterval<T>> UnionWith<T>(this IEnumerable<IInterval<T>> set, IInterval<T> interval)
             where T : IComparable<T>
         {
+            // TODO: Add tests to make sure that this method doesn't enumerate set more than once.
             return set.UnionWith(new[] { interval });
         }
 
@@ -581,6 +599,7 @@ namespace Intervals
         public static IList<IInterval<T>> UnionWith<T>(this IInterval<T> interval, IEnumerable<IInterval<T>> set)
             where T : IComparable<T>
         {
+            // TODO: Add tests to make sure that this method doesn't enumerate set more than once.
             return set.UnionWith(new[] { interval });
         }
 
@@ -594,6 +613,7 @@ namespace Intervals
         public static IList<IInterval<T>> UnionWith<T>(this IEnumerable<IInterval<T>> setA, IEnumerable<IInterval<T>> setB)
             where T : IComparable<T>
         {
+            // TODO: Add tests to make sure that this method doesn't enumerate setA or setB more than once.
             setA = setA ?? new IInterval<T>[0];
             setB = setB ?? new IInterval<T>[0];
 
