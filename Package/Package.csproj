@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{42F0CAFE-AD84-43E5-97F2-3E0E8B9EDB3E}</ProjectGuid>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <OutputType>Library</OutputType>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="Package.msbuild" />
+    <None Include="Intervals.nuspec" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="Package.msbuild" />
+  <Import Project="..\packages\GitVersionTask.4.0.0-beta0009\build\GitVersionTask.targets" Condition="Exists('..\packages\GitVersionTask.4.0.0-beta0009\build\GitVersionTask.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\GitVersionTask.4.0.0-beta0009\build\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GitVersionTask.4.0.0-beta0009\build\GitVersionTask.targets'))" />
+  </Target>
+</Project>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Intervals</id>
+    <version>$version$</version>
+    <authors>John Gietzen</authors>
+    <owners>John Gietzen</owners>
+    <projectUrl>https://github.com/otac0n/intervals</projectUrl>
+    <copyright>Copyright © 2016 John Gietzen</copyright>
+    <description>A library for working with intervals and sets. Includes a generic interface so that intervals of any type may be created.</description>
+    <tags>intervals date range number ranges math</tags>
+    <licenseUrl>https://raw.github.com/otac0n/intervals/master/license.md</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+  </metadata>
+</package>
