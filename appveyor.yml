@@ -10,7 +10,7 @@ before_build:
 build:
   project: Intervals.sln
 after_test:
-  - .\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:"nunit-console.exe" -targetargs:".\Intervals.Tests\bin\%CONFIGURATION%\Intervals.Tests.dll /noshadow" -filter:"+[Intervals]*" -hideskipped:All -output:.\Intervals.Tests\bin\%CONFIGURATION%\coverage.xml
+  - .\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:"nunit3-console.exe" -targetargs:".\Intervals.Tests\bin\%CONFIGURATION%\Intervals.Tests.dll" -filter:"+[Intervals]*" -hideskipped:All -output:.\Intervals.Tests\bin\%CONFIGURATION%\coverage.xml
   - codecov -X gcov -f ".\Intervals.Tests\bin\%CONFIGURATION%\coverage.xml"
 cache:
   - packages -> **\packages.config
