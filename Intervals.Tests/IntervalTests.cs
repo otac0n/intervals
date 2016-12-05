@@ -24,7 +24,7 @@ namespace Intervals.Tests
 
             EmptyIntervals = new[]
             {
-                null,
+                default(IntegerInterval),
                 new IntegerInterval(3, true, -3, true),
                 new IntegerInterval(0, true, 0, false),
                 new IntegerInterval(2, false, 2, true),
@@ -276,38 +276,6 @@ namespace Intervals.Tests
             var result = intervalA.Contains(intervalB);
 
             Assert.That(result, Is.False);
-        }
-
-        [Test]
-        public void Contains_WithNullInvterval_ReturnsFalse(
-            [ValueSource(nameof(Integers))] int value)
-        {
-            IntegerInterval interval = null;
-
-            var result = interval.Contains(value);
-
-            Assert.That(result, Is.False);
-        }
-
-        [Test]
-        public void Contains_WithNullInvtervalAndNonNullOtherInterval_ReturnsFalse()
-        {
-            var intervalA = (IntegerInterval)null;
-            var intervalB = new IntegerInterval(0, true, 1, false);
-
-            var result = intervalA.Contains(intervalB);
-
-            Assert.That(result, Is.False);
-        }
-
-        [Test]
-        public void Contains_WithNullInvtervalAndNullOtherInterval_ThrowsArgumentNullException()
-        {
-            IntegerInterval interval = null;
-
-            var result = interval.Contains(interval);
-
-            Assert.That(result, Is.True);
         }
 
         [Test]
@@ -757,6 +725,16 @@ namespace Intervals.Tests
         }
 
         [Test]
+        public void UnionWith_EmptyInterval_EmptyInterval_ReturnsNull(
+            [ValueSource(nameof(EmptyIntervals))] IntegerInterval intervalA,
+            [ValueSource(nameof(EmptyIntervals))] IntegerInterval intervalB)
+        {
+            var actual = intervalA.UnionWith(intervalB);
+
+            Assert.That(actual, Is.Null);
+        }
+
+        [Test]
         public void UnionWith_SimplifiesSet_ReturnsOtherInterval()
         {
             var set = new[]
@@ -868,17 +846,6 @@ namespace Intervals.Tests
             var actual = intervalA.UnionWith(intervalB);
 
             Assert.That(actual, Is.EquivalentTo(new[] { intervalB }));
-        }
-
-        [Test]
-        public void UnionWith_WithTwoEmptySets_ReturnsNull()
-        {
-            IntegerInterval intervalA = null;
-            IntegerInterval intervalB = null;
-
-            var actual = intervalA.UnionWith(intervalB);
-
-            Assert.That(actual, Is.Null);
         }
     }
 }
