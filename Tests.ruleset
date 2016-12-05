@@ -3,6 +3,8 @@
   <Include Path="strict.ruleset" Action="Default" />
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
     <Rule Id="CA1305" Action="None" />
+    <Rule Id="CA1702" Action="None" />
+    <Rule Id="CA1704" Action="None" />
     <Rule Id="CA1707" Action="None" />
     <Rule Id="CA1822" Action="None" />
     <Rule Id="CA2105" Action="None" />

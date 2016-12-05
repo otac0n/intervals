@@ -4,6 +4,7 @@ namespace Intervals
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
     /// <summary>
@@ -18,6 +19,7 @@ namespace Intervals
         /// <param name="interval">The interval to test.</param>
         /// <param name="value">The value to test.</param>
         /// <returns>true, if the interval is non-empty and contains the value; false, otherwise.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Covered by test Contains_WithNullInvterval_ReturnsFalse.")]
         public static bool Contains<T>(this IInterval<T> interval, T value)
             where T : IComparable<T>
         {
