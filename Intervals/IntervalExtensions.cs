@@ -152,7 +152,8 @@ namespace Intervals
         /// <param name="set">The source set.</param>
         /// <param name="interval">The interval to exclude.</param>
         /// <returns>A set that contains every part of <paramref name="set"/> that is not also contained by <paramref name="interval"/>.</returns>
-        public static IList<IInterval<T>> DifferenceWith<T>(this IEnumerable<IInterval<T>> set, IInterval<T> interval) where T : IComparable<T>
+        public static IList<IInterval<T>> DifferenceWith<T>(this IEnumerable<IInterval<T>> set, IInterval<T> interval)
+            where T : IComparable<T>
         {
             return set.DifferenceWith(new[] { interval });
         }
@@ -177,7 +178,8 @@ namespace Intervals
         /// <param name="setA">The source set.</param>
         /// <param name="setB">The set to exclude.</param>
         /// <returns>A set that contains every part of <paramref name="setA"/> that is not also contained by <paramref name="setB"/>.</returns>
-        public static IList<IInterval<T>> DifferenceWith<T>(this IEnumerable<IInterval<T>> setA, IEnumerable<IInterval<T>> setB) where T : IComparable<T>
+        public static IList<IInterval<T>> DifferenceWith<T>(this IEnumerable<IInterval<T>> setA, IEnumerable<IInterval<T>> setB)
+            where T : IComparable<T>
         {
             if (setA.IsEmpty())
             {
@@ -221,7 +223,8 @@ namespace Intervals
         /// <param name="interval">The first interval.</param>
         /// <param name="other">The second interval.</param>
         /// <returns>An interval that represents the intersection of the intervals.</returns>
-        public static IInterval<T> IntersectWith<T>(this IInterval<T> interval, IInterval<T> other) where T : IComparable<T>
+        public static IInterval<T> IntersectWith<T>(this IInterval<T> interval, IInterval<T> other)
+            where T : IComparable<T>
         {
             if (interval.IsEmpty() ||
                 other.IsEmpty())
@@ -315,7 +318,8 @@ namespace Intervals
         /// If an interval has the same start and end values, but either the start or end value is not inclusive, the interval is empty.
         /// An interval is also considered empty if its start value is greater than its end value.
         /// </remarks>
-        public static bool IsEmpty<T>(this IInterval<T> interval) where T : IComparable<T>
+        public static bool IsEmpty<T>(this IInterval<T> interval)
+            where T : IComparable<T>
         {
             if (interval == null)
             {
@@ -346,7 +350,8 @@ namespace Intervals
         /// <remarks>
         /// See <see cref="IsEmpty&lt;T&gt;(IInterval&lt;T&gt;)"/> for remarks.
         /// </remarks>
-        public static bool IsEmpty<T>(this IEnumerable<IInterval<T>> set) where T : IComparable<T>
+        public static bool IsEmpty<T>(this IEnumerable<IInterval<T>> set)
+            where T : IComparable<T>
         {
             if (set == null)
             {
@@ -373,7 +378,8 @@ namespace Intervals
         /// <remarks>
         /// Sets can be simplified if any of their components intersect.
         /// </remarks>
-        public static IList<IInterval<T>> Simplify<T>(this IEnumerable<IInterval<T>> set) where T : IComparable<T>
+        public static IList<IInterval<T>> Simplify<T>(this IEnumerable<IInterval<T>> set)
+            where T : IComparable<T>
         {
             var list = (from r in set
                         where !r.IsEmpty()
@@ -419,7 +425,8 @@ namespace Intervals
         /// <remarks>
         /// If the intervals intersect, the result will be a set with a single interval.
         /// </remarks>
-        public static IList<IInterval<T>> UnionWith<T>(this IInterval<T> interval, IInterval<T> other) where T : IComparable<T>
+        public static IList<IInterval<T>> UnionWith<T>(this IInterval<T> interval, IInterval<T> other)
+            where T : IComparable<T>
         {
             var intervalEmpty = interval.IsEmpty();
             var otherEmpty = other.IsEmpty();
@@ -556,7 +563,8 @@ namespace Intervals
         /// <param name="set">The set.</param>
         /// <param name="interval">The interval.</param>
         /// <returns>A set containing the union of the set and interval.</returns>
-        public static IList<IInterval<T>> UnionWith<T>(this IEnumerable<IInterval<T>> set, IInterval<T> interval) where T : IComparable<T>
+        public static IList<IInterval<T>> UnionWith<T>(this IEnumerable<IInterval<T>> set, IInterval<T> interval)
+            where T : IComparable<T>
         {
             return set.UnionWith(new[] { interval });
         }
@@ -568,7 +576,8 @@ namespace Intervals
         /// <param name="interval">The interval.</param>
         /// <param name="set">The set.</param>
         /// <returns>A set containing the union of the interval and the set.</returns>
-        public static IList<IInterval<T>> UnionWith<T>(this IInterval<T> interval, IEnumerable<IInterval<T>> set) where T : IComparable<T>
+        public static IList<IInterval<T>> UnionWith<T>(this IInterval<T> interval, IEnumerable<IInterval<T>> set)
+            where T : IComparable<T>
         {
             return set.UnionWith(new[] { interval });
         }
@@ -580,7 +589,8 @@ namespace Intervals
         /// <param name="setA">The first set.</param>
         /// <param name="setB">The second set.</param>
         /// <returns>A set that contains both sets.</returns>
-        public static IList<IInterval<T>> UnionWith<T>(this IEnumerable<IInterval<T>> setA, IEnumerable<IInterval<T>> setB) where T : IComparable<T>
+        public static IList<IInterval<T>> UnionWith<T>(this IEnumerable<IInterval<T>> setA, IEnumerable<IInterval<T>> setB)
+            where T : IComparable<T>
         {
             setA = setA ?? new IInterval<T>[0];
             setB = setB ?? new IInterval<T>[0];
