@@ -8,7 +8,7 @@ namespace Intervals
     using System.Linq;
 
     /// <summary>
-    /// Provides methods for working with object implementing <see cref="IInterval&lt;T&gt;"/>.
+    /// Provides methods for working with object implementing <see cref="IInterval{T}"/>.
     /// </summary>
     public static class IntervalExtensions
     {
@@ -363,7 +363,7 @@ namespace Intervals
         /// <param name="set">The set of intervals to test.</param>
         /// <returns>true, if the set is null or considered empty; false, otherwise.</returns>
         /// <remarks>
-        /// See <see cref="IsEmpty&lt;T&gt;(IInterval&lt;T&gt;)"/> for remarks.
+        /// See <see cref="IsEmpty{T}(IInterval{T})"/> for remarks.
         /// </remarks>
         public static bool IsEmpty<T>(this IEnumerable<IInterval<T>> set)
             where T : IComparable<T>
